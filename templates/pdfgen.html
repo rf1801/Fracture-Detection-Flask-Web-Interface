@@ -1,0 +1,388 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>pdf generator</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="hhttps://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+ <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+
+ <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+ <script src="/static/js/scripts.js"></script>
+    <script src="/static/js/scripts.js"></script>
+
+    
+</head>
+<body>
+    <div id="pdffiles"   >
+   
+        <div class="container mt-3 mb-3">
+            <!-- Title -->
+            <div class="row">
+                <div class="col-12 title-section text-center bordered-section py-2">
+                    <h1 class="m-0">Test Results</h1>
+                </div>
+            </div>
+            <div class="row footer-section bordered-section">
+              <div class="col-6 bgc d-flex justify-content-center align-items-center vertical-divider">
+                <br>
+                <h3 class="mb-0" style="font-weight:bold ;" >Personal Information :</h3>
+                <br>
+              </div>
+              <div class="col-6 bgc d-flex justify-content-center align-items-center">
+                <br>
+                  <h3 class="mb-0" style="font-weight:bold ;"  >X-RAY image :</h3>
+                  <br>
+              </div>
+              
+          </div>
+    
+        <div class="row footer-section bordered-section">
+          <div class="col-6 d-flex justify-content-center align-items-center vertical-divider">
+            <div class="mb-3">
+              <ul class="list-group list-group-flush">
+                <br>
+                <br>
+            <h4 id="name" value="{{name}}">Name: {{name}} </h4>
+            <br>
+            <h4 id="surname" value="{{surname}}">Surname :{{surname}}</h4>
+            <br>
+            <h4 id="doB" value="{{ dob }}">Date of birth: {{ dob }}</h4>
+            <br>
+            <H4 id="email" value="{{ email }}"> Email: {{ email }}</H4>
+            <br>
+              </ul>
+            </div>
+          </div>
+          <div class="col-6 d-flex justify-content-center align-items-center">
+              
+              <div class=" ">
+                <H4 id="bodypart" style="text-align: center;" value="{{ body_part }}"> {{ body_part }}</H4>
+                <img style="width:300px; height:300px;"  class="image-background" src="{{image_path}}" alt="Embedded Image" >
+                
+            </div>
+          </div>
+          
+      </div>
+      <div class="row footer-section bordered-section">
+        <div class="col-6 bgc d-flex justify-content-center align-items-center vertical-divider">
+          <br>
+          <h3 style="font-weight:bold ;"  class="mb-0">Result pourcentage :</h3>
+          <br>
+        </div>
+        <div class="col-6 bgc d-flex justify-content-center align-items-center">
+          <br>
+            <h3 style="font-weight:bold ;" class="mb-0"> Doctor stamp & signature:</h3>
+            <br>
+        </div>
+        
+    </div>
+
+    <div class="row footer-section bordered-section">
+        <div><span class="dot" style="background-color:#004c6d; font-weight: bold;   margin-left: 60PX;"></span> Fractured  <span id="percentage-fractured"></span>%
+            
+       <span class="dot" style="background-color: #ff8c00; margin-left: 0PX;"></span> Not Fractured <span id="percentage-not-fractured"></span>%</div> 
+    <div class="col-6 d-flex justify-content-center align-items-center vertical-divider">
+   
+  
+
+      <div class="chart-container">
+
+
+        <div class="chart-labels">
+            <div>0</div>
+            <div>10</div>
+            <div>20</div>
+            <div>30</div>
+            <div>40</div>
+            <div>50</div>
+            <div>60</div>
+            <div>70</div>
+            <div>80</div>
+            <div>90</div>
+            <div>100</div>
+        </div>
+        <div class="chart-bars">
+        
+          
+            <div id="bar-not-fractured" class="bar">
+            
+            </div>  
+            <div id="bar-fractured" class="bar">
+           
+            </div>
+        </div>
+        
+    </div>
+
+            
+    </div>
+
+    <div class="col-6 d-flex justify-content-center align-items-center">
+
+           <div style="width:290px; height:290px;"></div>
+           
+    </div>
+    
+    </div>
+            <div class="row footer-section bordered-section py-2">
+              <div class="col-12 text-center">
+                <br>
+                <h3   >Result:</h3> 
+                <h4  style="color: {{ prediction.lower() == 'fractured' and 'red' or 'green' if prediction is defined else 'black' }};" class="mb-0"style="font-weight:bold ;"  id="prediction"  value="{{ prediction }}" > {{ prediction }}</h4> 
+                <br>
+              </div>
+          </div>
+          <div style="border-color: transparent;" class=row footer-section bordered-section py-2>
+            <div  class="col-12 text-center">
+          <br>
+              <h5  class="mb-0" id="issuingDate">Issuing date : </h5>
+              <H6 style="margin-top: 20px;">Page 1</H6>
+            </div>
+        </div>
+          <br><br><br><br><br> <br>
+          
+         
+          
+
+          <div style="border-color: transparent;" class="row footer-section bordered-section py-2">
+            <div  class="col-12 text-center">
+              <br>
+              <h4 class="mb-0 " style="font-weight:bold ;" >Advices:</h4>
+              <br>
+            </div>
+        </div>
+        <br>
+        <div id="content">
+            {% if prediction.lower() == 'fractured' %}
+                <h4>Broken bones heal by themselves - the aim of medical treatment is to make sure the pieces of bone are lined up correctly. The bone needs to recover fully in strength, movement and sensitivity. Some complicated fractures may need surgery or surgical traction (or both). Depending on where the fracture is and how severe, treatment may include:</h4>
+                <ul>
+                    <li><b>Diet:</b> Consume a diet rich in calcium and protein, essential for bone healing and muscle recovery. Get adequate vitamin D by spending time outdoors during specific hours or consulting a doctor for supplements in the case of deficiency.</li>
+                    <li><b>Medical Treatment:</b> Adhering to the recommended medical treatment, whether cast immobilization, surgery, or other procedures, can accelerate healing and reduce the risk of nonunion or delayed union. The typical healing period for bones is approximately 3-6 months.</li>
+                    <li><b>Postoperative Physical Therapy:</b> Engaging in weight-bearing and motion exercises as prescribed by a medical specialist can enhance healing and lower the risk of fixation device damage.</li>
+                    <li><b>Bone Fixations:</b> Older patients with osteoporosis may benefit from high tensile strength bone fixations to regain stability and functionality. Simultaneous osteoporosis treatment, including bone mineral density assessments and fall prevention measures, is advisable.</li>
+                    <li><b>Smoking Cessation:</b> Smoking, including vaping, can hinder bone healing by inhibiting bone mass production. Patients with fractures or osteoporosis should quit smoking to expedite the healing process.</li>
+                </ul>
+            {% else %}
+                <h4>Preventing bone fractures is essential for maintaining overall health and mobility. Here are some tips to avoid bone fractures:</h4>
+                <ul>
+                    <li><b>Maintain a Balanced Diet:</b> Ensure your diet is rich in calcium and vitamin D to strengthen bones. Dairy products, leafy greens, and fortified foods are excellent sources.</li>
+                    <li><b>Regular Exercise:</b> Engage in weight-bearing exercises like walking, running, and resistance training to enhance bone density and strength.</li>
+                    <li><b>Bone Health Checkups:</b> Regular medical checkups, including bone density tests, can help detect early signs of osteoporosis or other bone-related conditions.</li>
+                    <li><b>Avoid Smoking and Excessive Alcohol:</b> Both smoking and excessive alcohol consumption can weaken bones. Avoid these to maintain bone health.</li>
+                    <li><b>Fall Prevention:</b> Ensure your living environment is safe by removing tripping hazards, using non-slip mats, and installing grab bars in bathrooms. Regular vision and hearing checkups can also help prevent falls.</li>
+                </ul>
+            {% endif %}
+        </div>
+     
+            <div class="row bordered-section advice-section py-3 px-4">
+              <br>
+                <h4>Bone fractures can have significant consequences. This website provides general information, but it's important to consult your doctor for proper diagnosis and treatment to ensure a safe and effective recovery.</h4>
+                <br>
+            </div>
+            
+    
+            <div class="row">
+                <div   class="col-12  text-center py-2">
+                   <H6 style="margin-top: 100px;">Page 2</H6>
+                </div>
+            </div>
+        </div>
+</body>
+<style>
+li {
+    font-size: 16;
+}
+.bgc {
+  background-color: #3d5a80;
+  color: #e0fbfc;
+}
+.buttom {
+  
+  bottom: 0;      
+  right: 0;         
+}
+    .chart-legend {
+    display: flex;
+    justify-content: center;
+    width: 100%; /* Full width to align with the container */
+    margin-bottom: 10px; /* Space between legend and chart */
+}
+    .dot {
+    height: 20px;
+    width: 20px;
+    border-radius: 50%;
+    display: inline-block;
+    margin-right: 5px;
+}
+.chart-container {
+    display: flex;
+    align-items: end;
+    height: 280px; /* Adjust based on your preference */
+    border-left: 1px solid #ccc;
+    border-bottom: 1px solid #ccc;
+}
+
+.chart-labels {
+    display: flex;
+    flex-direction: column-reverse;
+    align-items: flex-end;
+    padding-right: 5px;
+}
+.chart-legend {
+    position: absolute;
+    bottom: 10px; /* Adjust as needed */
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    align-items: center;
+}
+
+.dot {
+    height: 20px;
+    width: 20px;
+    border-radius: 50%;
+    display: inline-block;
+    margin-right: 5px;
+}
+.chart-labels div {
+    height: calc(280px / 11); /* Adjust based on the number of increments */
+    display: flex;
+    align-items: center;
+}
+
+.chart-bars {
+    display: flex;
+    height: 100%;
+    transform: rotate(180deg); /* Rotate the entire bar container */
+}
+
+.bar {
+    width: 70px; /* Adjust the width of the bars */
+    margin: 0 30px; 
+    background-color: #004c6d;
+    transition: height 0.5s ease-in-out;
+}
+
+#bar-not-fractured {
+    background-color: #ff8c00;
+}
+ html, body {
+    width: 100%;
+    min-height: 100%;
+    margin: 0;
+    padding: 0;
+    background-color: white;
+    font-family: 'Arial', sans-serif;
+    font-size: small;
+    box-sizing: border-box; /* Ensures padding and borders are included in width/height */
+}
+
+.container {
+    max-width: 800px; /* Max width of the content area */
+    margin: 0 auto; /* Center the container */
+    padding: 10px;
+    box-sizing: border-box;
+}
+
+.bordered-section {
+    border: 1px solid #000;
+    padding: 5px;
+    margin-bottom: 10px;
+}
+
+.title-section, .footer-section {
+    background-color: #fff;
+    border-bottom: 1px solid #000;
+}
+
+.vertical-divider {
+    border-right: 2px solid black;
+    height: auto;
+}
+
+.row {
+    display: flex;
+    flex-wrap: wrap; /* Allows items to wrap in smaller screens */
+    margin: 0 -15px;
+}
+
+.col-6 {
+    flex: 0 0 50%; /* Each column takes up 50% of the container width */
+    max-width: 50%; /* Prevents the column from growing beyond 50% */
+    padding: 5px; /* Space between columns */
+    box-sizing: border-box;
+}
+
+.img-responsive, canvas {
+    max-width: 100%;
+    height: auto; /* Keeps the aspect ratio of the image */
+}
+
+.footer-section {
+        background-color: #ffffff;
+        border-bottom: 1px solid #000;
+    }
+    .footer-section {
+        border-top: 1px solid #000;
+    }
+    .profile-pic {
+        height: 100px; /* Adjust as necessary */
+        background-color: #00610d61;
+    }
+    page-footer {
+        background-color: #ffffff;
+        border: 1px solid transparent;
+    }
+    @media print {
+    * {
+        -webkit-print-color-adjust: exact;
+        color-adjust: exact;
+       
+    }
+  
+}
+
+
+
+   
+
+
+
+</style>
+<script>
+
+document.addEventListener('DOMContentLoaded', function() {
+    // Assuming that the server-side template renders `prob_fractured` and `prob_not_fractured` directly as numbers in the JavaScript code
+    var prob_fractured = {{ prob_fractured }}; // These will be replaced by server-rendered values
+    var prob_not_fractured = {{ prob_not_fractured }};
+
+    // Format the percentage values to two decimal places
+    var formattedProbFractured = prob_fractured.toFixed(2);
+    var formattedProbNotFractured = prob_not_fractured.toFixed(2);
+
+    // Update the text content for percentages
+    document.getElementById('percentage-fractured').textContent = formattedProbFractured;
+    document.getElementById('percentage-not-fractured').textContent = formattedProbNotFractured;
+
+    // Update the heights of the bars based on the percentages
+    const fractured = document.getElementById('bar-fractured');
+    const notFractured = document.getElementById('bar-not-fractured');
+
+    fractured.style.height = `${formattedProbFractured}%`;
+    notFractured.style.height = `${formattedProbNotFractured}%`;
+});
+
+document.addEventListener('DOMContentLoaded', function() {
+    var today = new Date();
+    var date = today.getDate() + '-' + (today.getMonth() + 1) + '-' + today.getFullYear();
+    var time = today.getHours() + ':' + today.getMinutes().toString().padStart(2, '0');
+   
+    document.getElementById('issuingDate').innerText = "Issuing date: " + date + " at "  + time ; // Set instead of append
+});
+
+
+
+
+      </script>
+</html>
